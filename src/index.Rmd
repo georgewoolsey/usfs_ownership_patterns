@@ -1,0 +1,57 @@
+--- 
+title: "Patterns of forest productivity and land ownership"
+author: "George Woolsey"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: 
+  bookdown::gitbook:
+    includes:
+      in_header: header.html
+documentclass: book
+book_filename: "usfs_ownership_patterns"
+output_dir: "../docs"
+language:
+  ui:
+    chapter_name: "Chapter "
+delete_merged_file: true
+bibliography: [packages.bib]
+biblio-style: apalike
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/research-institute-for-nature-and-forest.csl
+suppress-bibliography: false
+lang: en-US
+zotero: true
+link-citations: true
+description: "Using the bookdown package to write a book for analysis of patterns of forest productivity and land ownership. The output format is bookdown::gitbook."
+---
+
+# Objective
+
+Replicate the analysis of [Robinson et al. (2019)](https://esajournals.onlinelibrary.wiley.com/doi/pdf/10.1002/eap.1862) for forested areas of the conterminous United States:
+
+*Public rangelands are interspersed with private and tribal rangelands resulting in a complex mosaic of land tenure and management priorities. We quantify ownership patterns of rangeland production at multiple scales across CONUS and find that both total production and average productivity of private rangelands is more than twice that of public and tribal rangelands. At finer scales, private rangelands are consistently more productive than their public counterparts. We also demonstrate an inverse relationship between public rangeland acreage and productivity. While conserving acreage is crucial to rangeland conservation, just as critical are broad-scale ecological patterns and processes that sustain ecosystem services.*
+
+Source of data for forest ownership across the conterminous United States is [Sass, Butler, & Markowski-Lindsay (2020)](https://www.fs.usda.gov/nrs/pubs/rmap/rmap_nrs11.pdf) with data downloaded from [this source](https://www.fs.usda.gov/rds/archive/Catalog/RDS-2020-0044).
+
+
+```{r include=FALSE, echo=FALSE}
+knitr::write_bib(c(
+  .packages(),
+  'bookdown'
+  , 'knitr'
+  , 'rmarkdown'
+  , 'tidyverse'
+  , 'lubridate'
+  , 'RColorBrewer'
+  , 'scales'
+  , 'ggrepel'
+  , 'viridis'
+  , 'kableExtra'
+  , 'sf'
+  , 'stars'
+  , 'lwgeom'
+  , 'mapview'
+  , 'leafpop'
+  , 'elevatr'
+  , 'terra'
+), 'packages.bib')
+```

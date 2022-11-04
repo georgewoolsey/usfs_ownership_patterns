@@ -1,0 +1,131 @@
+# Data Preparation {#data_prep}
+
+```{r, include=FALSE, warning=F, message=F}
+# data mgmt
+library(tidyverse)
+library(lubridate)
+# visualization
+library(RColorBrewer)
+library(scales)
+library(viridis)
+library(kableExtra)
+library(latex2exp)
+# spatial
+library(sf)
+library(stars)
+library(starsExtra) # functions for working with stars objects
+library(lwgeom) 
+library(mapview) #Interactive maps
+library(leafpop) #map html popup
+library(USAboundaries)
+
+# knit options
+knitr::opts_chunk$set(
+  echo = TRUE
+  , warning = FALSE
+  , message = FALSE
+  , results='hide'
+  , fig.width = 10
+  , fig.height = 7
+)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
+## Overwrite Data Switch
+#######################################################
+#######################################################
+# TURN ON/OFF DATA OVERWRITE
+# TURNING THIS ON WILL RE-RUN ALL LIDAR PROCESSING
+# WHICH TAKES A LONG TIME
+#######################################################
+#######################################################
+overwrite_it <- TRUE
+```
+
+
+```{r}
+# turn off the s2 processing 
+## https://stackoverflow.com/questions/68478179/how-to-resolve-spherical-geometry-failures-when-joining-spatial-data
+sf::sf_use_s2(FALSE)
+
+# set crs
+my_crs <- 5070 # EPSG:5070 = NAD83/Conus Albers (units = meters); EPSG:4326 = WGS 84 (units = dd); EPSG:4269 = NAD83 (units = dd)
+```
+
+## Import forest ownership layer
+
+Source of data for forest ownership across the conterminous United States is [Sass, Butler, & Markowski-Lindsay (2020)](https://www.fs.usda.gov/nrs/pubs/rmap/rmap_nrs11.pdf) with data downloaded from [this source](https://www.fs.usda.gov/rds/archive/Catalog/RDS-2020-0044).
+
+```{r}
+ownership <- stars::read_stars("../data/forest_own1/forest_own1.tif") %>% 
+  setNames("ownership")
+```
+
+## US boundaries
+
+```{r}
+usa_boundary <- USAboundaries::us_states() %>% 
+  dplyr::filter(!stusps %in% c("AK", "HI", "PR")) %>% 
+  dplyr::filter(stusps %in% c("CO")) %>% 
+  sf::st_transform(crs = sf::st_crs(ownership)) 
+
+ggplot() +
+  geom_sf(data = usa_boundary, alpha = 0, lwd = 1, color = "black") + 
+  theme_bw()
+```
+
+```{r}
+ownership_small <- ownership[
+    usa_boundary %>%
+      sf::st_union() %>%
+      sf::st_bbox()
+  ]
+```
+
+
+
+```{r, eval=FALSE}
+ggplot() + 
+  stars::geom_stars(data = ownership_small) +
+  scale_fill_viridis_c(
+    option = "turbo"
+    , alpha = 0.8
+    , na.value = "transparent"
+  ) +
+  geom_sf(data = usa_boundary, alpha = 0, lwd = 1, color = "black") +
+  labs(
+      title = ""
+      , fill = ""
+    ) +
+  xlab("") +
+  ylab("") +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+    , legend.direction = "horizontal"
+    , legend.margin = margin(0,0,0,0)
+    , legend.text = element_text(size = 7)
+    , legend.title = element_text(size = 7)
+    , axis.text.y = element_text(size = 7)
+    , axis.text.x = element_text(size = 7, angle = 35, hjust = 0.7)
+    , panel.border = element_blank()
+  )
+```
+
+
+```{r, results='asis', eval=FALSE}
+mapview::mapviewOptions(homebutton = FALSE, basemaps = c("Esri.WorldTopoMap")) # "Esri.WorldImagery"
+mapview::mapview(
+  x = gmug
+  , color = "black"
+  , lwd = 4
+  , alpha.regions = 0
+  , label = FALSE
+  , legend = FALSE
+  , popup = FALSE
+  , map.types = "Esri.WorldTopoMap" # "Esri.WorldImagery"
+)
+```
+
