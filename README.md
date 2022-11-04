@@ -1,0 +1,1 @@
+# usfs_ownership_patterns
